@@ -1,3 +1,4 @@
+import 'package:floodfill_image/src/tap_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:ui' as ui;
@@ -47,11 +48,14 @@ class FloodFillImage extends StatefulWidget {
   /// Callback function that returns an [Image] from *dart:ui* when flood fill ended.
   final Function(ui.Image image)? onFloodFillEnd;
 
+  final TapController? tapController;
+
   /// Flutter widget that can use paint bucket functionality on the provided image.
   const FloodFillImage(
       {Key? key,
       required this.imageProvider,
       required this.fillColor,
+      this.tapController,
       this.isFillActive = true,
       this.avoidColor,
       this.tolerance = 8,
@@ -77,6 +81,18 @@ class _FloodFillImageState extends State<FloodFillImage> {
   ValueNotifier<String>? _repainter;
 
   @override
+  void initState() {
+    widget.tapController?.addListener(_onTap);
+    super.initState();
+  }
+
+  void _onTap() {
+    if (widget.tapController?.tapPosition != null) {
+      _painter?.fill(widget.tapController!.tapPosition!);
+    }
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _resizeImage();
@@ -94,16 +110,13 @@ class _FloodFillImageState extends State<FloodFillImage> {
 
   void _resizeImage() {
     _imageProvider = widget.imageProvider;
-    if (widget.width != null)
-      _imageProvider = ResizeImage(widget.imageProvider, width: widget.width);
-    if (widget.height != null)
-      _imageProvider = ResizeImage(widget.imageProvider, height: widget.height);
+    if (widget.width != null) _imageProvider = ResizeImage(widget.imageProvider, width: widget.width);
+    if (widget.height != null) _imageProvider = ResizeImage(widget.imageProvider, height: widget.height);
   }
 
   void _getImage() {
     final ImageStream? oldImageStream = _imageStream;
-    _imageStream =
-        _imageProvider?.resolve(createLocalImageConfiguration(context));
+    _imageStream = _imageProvider?.resolve(createLocalImageConfiguration(context));
     if (_imageStream?.key != oldImageStream?.key) {
       final ImageStreamListener listener = ImageStreamListener(_updateImage);
       oldImageStream?.removeListener(listener);
@@ -118,8 +131,8 @@ class _FloodFillImageState extends State<FloodFillImage> {
     _repainter = ValueNotifier("");
     _painter = FloodFillPainter(
         image: _imageInfo!.image,
-        fillColor: img.ColorRgba8(widget.fillColor.red, widget.fillColor.green,
-            widget.fillColor.blue, widget.fillColor.alpha),
+        fillColor:
+            img.ColorRgba8(widget.fillColor.red, widget.fillColor.green, widget.fillColor.blue, widget.fillColor.alpha),
         notifier: _repainter,
         onFloodFillStart: widget.onFloodFillStart,
         onFloodFillEnd: widget.onFloodFillEnd,
@@ -133,17 +146,15 @@ class _FloodFillImageState extends State<FloodFillImage> {
   @override
   void dispose() {
     _imageStream?.removeListener(ImageStreamListener(_updateImage));
+    widget.tapController?.removeListener(_onTap);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     if (_painter != null) {
-      final fillColor = img.ColorRgba8(
-          widget.fillColor.red,
-          widget.fillColor.green,
-          widget.fillColor.blue,
-          widget.fillColor.alpha);
+      final fillColor =
+          img.ColorRgba8(widget.fillColor.red, widget.fillColor.green, widget.fillColor.blue, widget.fillColor.alpha);
       _painter?.setFillColor(fillColor); //incase we want to update fillColor
       _painter?.setAvoidColor(widget.avoidColor!);
       _painter?.setTolerance(widget.tolerance);
@@ -172,11 +183,8 @@ class _FloodFillImageState extends State<FloodFillImage> {
 
             _painter!.setSize(Size(w, h));
             return (widget.alignment == null)
-                ? RepaintBoundary(
-                    child: CustomPaint(painter: _painter, size: Size(w, h)))
-                : Align(
-                    alignment: widget.alignment!,
-                    child: CustomPaint(painter: _painter, size: Size(w, h)));
+                ? RepaintBoundary(child: CustomPaint(painter: _painter, size: Size(w, h)))
+                : Align(alignment: widget.alignment!, child: CustomPaint(painter: _painter, size: Size(w, h)));
           })
         : (widget.loadingWidget == null)
             ? CircularProgressIndicator()
