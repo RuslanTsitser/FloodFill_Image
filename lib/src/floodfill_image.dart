@@ -116,10 +116,7 @@ class _FloodFillImageState extends State<FloodFillImage> {
 
   void _getImage() {
     final ImageStream? oldImageStream = _imageStream;
-    _imageStream = _imageProvider?.resolve(createLocalImageConfiguration(context,
-        size: widget.width == null || widget.height == null
-            ? null
-            : Size(widget.width!.toDouble(), widget.height!.toDouble())));
+    _imageStream = _imageProvider?.resolve(createLocalImageConfiguration(context));
     if (_imageStream?.key != oldImageStream?.key) {
       final ImageStreamListener listener = ImageStreamListener(_updateImage);
       oldImageStream?.removeListener(listener);
@@ -128,10 +125,11 @@ class _FloodFillImageState extends State<FloodFillImage> {
   }
 
   void _updateImage(ImageInfo imageInfo, bool synchronousCall) {
-    print('hello');
     _imageInfo = imageInfo;
     _width = _imageInfo?.image.width.toDouble();
     _height = _imageInfo?.image.height.toDouble();
+    if (_height != null && _imageInfo != null) _height = _height! * _imageInfo!.scale;
+    if (_width != null && _imageInfo != null) _width = _width! * _imageInfo!.scale;
     _repainter = ValueNotifier("");
     _painter = FloodFillPainter(
         image: _imageInfo!.image,
