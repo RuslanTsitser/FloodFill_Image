@@ -125,6 +125,7 @@ class _FloodFillImageState extends State<FloodFillImage> {
   }
 
   void _updateImage(ImageInfo imageInfo, bool synchronousCall) {
+    print('hello');
     _imageInfo = imageInfo;
     _width = _imageInfo?.image.width.toDouble();
     _height = _imageInfo?.image.height.toDouble();
