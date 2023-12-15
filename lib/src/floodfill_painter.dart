@@ -34,7 +34,7 @@ class FloodFillPainter extends CustomPainter {
   }
 
   void _initFloodFiller() async {
-    ByteData byteData = (await image.toByteData())!;
+    ByteData byteData = (await image.toByteData(format: ui.ImageByteFormat.png))!;
     var bytes = byteData.buffer.asUint8List();
     img.Image decoded = img.decodeImage(bytes)!;
     _filler = QueueLinearFloodFiller(decoded, fillColor);
@@ -109,7 +109,7 @@ class FloodFillPainter extends CustomPainter {
       _filler!.image!.getBytes(),
       _filler!.image!.width,
       _filler!.image!.height,
-      ui.PixelFormat.rgba8888,
+      ui.PixelFormat.rgbaFloat32,
       (output) async {
         image = output;
         notifier!.value = position.toString() + touchColor.toString();
