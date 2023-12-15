@@ -109,7 +109,7 @@ class FloodFillPainter extends CustomPainter {
       _filler!.image!.getBytes(),
       _filler!.image!.width,
       _filler!.image!.height,
-      ui.PixelFormat.rgbaFloat32,
+      ui.PixelFormat.rgba8888,
       (output) async {
         image = output;
         notifier!.value = position.toString() + touchColor.toString();
