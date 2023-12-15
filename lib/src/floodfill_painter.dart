@@ -34,7 +34,7 @@ class FloodFillPainter extends CustomPainter {
   }
 
   void _initFloodFiller() async {
-    ByteData byteData = (await image.toByteData(format: ui.ImageByteFormat.rawUnmodified))!;
+    ByteData byteData = (await image.toByteData())!;
     var bytes = byteData.buffer.asUint8List();
     img.Image decoded = img.decodeImage(bytes)!;
     _filler = QueueLinearFloodFiller(decoded, fillColor);
