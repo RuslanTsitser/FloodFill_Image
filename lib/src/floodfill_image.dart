@@ -128,8 +128,6 @@ class _FloodFillImageState extends State<FloodFillImage> {
     _imageInfo = imageInfo;
     _width = _imageInfo?.image.width.toDouble();
     _height = _imageInfo?.image.height.toDouble();
-    if (_height != null && _imageInfo != null) _height = _height! * _imageInfo!.scale;
-    if (_width != null && _imageInfo != null) _width = _width! * _imageInfo!.scale;
     _repainter = ValueNotifier("");
     _painter = FloodFillPainter(
         image: _imageInfo!.image,
