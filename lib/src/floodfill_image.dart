@@ -116,7 +116,10 @@ class _FloodFillImageState extends State<FloodFillImage> {
 
   void _getImage() {
     final ImageStream? oldImageStream = _imageStream;
-    _imageStream = _imageProvider?.resolve(createLocalImageConfiguration(context));
+    _imageStream = _imageProvider?.resolve(createLocalImageConfiguration(context,
+        size: widget.width == null || widget.height == null
+            ? null
+            : Size(widget.width!.toDouble(), widget.height!.toDouble())));
     if (_imageStream?.key != oldImageStream?.key) {
       final ImageStreamListener listener = ImageStreamListener(_updateImage);
       oldImageStream?.removeListener(listener);
